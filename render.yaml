@@ -26,8 +26,6 @@ services:
         sync: false
       - key: TWILIO_ADMIN_PHONE
         sync: false
-      - key: TWILIO_CONTENT_SID
-        sync: false
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT
@@ -65,8 +63,6 @@ services:
       - key: TWILIO_FROM
         sync: false
       - key: TWILIO_ADMIN_PHONE
-        sync: false
-      - key: TWILIO_CONTENT_SID
         sync: false
       - key: SMTP_HOST
         sync: false

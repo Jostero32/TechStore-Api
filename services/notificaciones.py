@@ -1,13 +1,14 @@
 """Requerimiento 8: alertas con Twilio y correos (Brevo HTTP API o SMTP)."""
-import os, base64, json, smtplib, requests
+import os, base64, smtplib, requests
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
 BREVO_URL = "https://api.brevo.com/v3/smtp/email"
 
-def enviar_alerta_sms(content_variables: dict):
-    """Alerta por WhatsApp (Twilio Sandbox) usando un Content Template aprobado."""
+def enviar_alerta_sms(mensaje: str):
+    """Alerta por WhatsApp (Twilio Sandbox). Solo se entrega como texto libre
+    dentro de las 24h desde que el destino envió 'join <código>' al sandbox."""
     sid   = os.getenv("TWILIO_ACCOUNT_SID")
     token = os.getenv("TWILIO_AUTH_TOKEN")
     if not sid or not token:
@@ -16,8 +17,7 @@ def enviar_alerta_sms(content_variables: dict):
     try:
         from twilio.rest import Client
         Client(sid, token).messages.create(
-            content_sid=os.getenv("TWILIO_CONTENT_SID"),
-            content_variables=json.dumps(content_variables),
+            body=mensaje,
             from_=f"whatsapp:{os.getenv('TWILIO_FROM')}",
             to=f"whatsapp:{os.getenv('TWILIO_ADMIN_PHONE')}",
         )
