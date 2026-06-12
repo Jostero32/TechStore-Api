@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+venv/
+
+# Contienen credenciales reales (Firebase, Twilio, SMTP, DB). Quedan locales
+# para copiar/pegar en Render -> Environment, pero NO se suben al repo.
+.env
+variables-render.env
