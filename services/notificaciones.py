@@ -1,10 +1,18 @@
 """Requerimiento 8: alertas con Twilio y correos (Brevo HTTP API o SMTP)."""
-import os, base64, smtplib, requests
+import os, base64, socket, smtplib, requests
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
 BREVO_URL = "https://api.brevo.com/v3/smtp/email"
+
+class _SMTPv4(smtplib.SMTP):
+    """SMTP que fuerza resolución IPv4: en Render el contenedor no tiene
+    salida IPv6 y smtp.gmail.com también publica AAAA, lo que provoca
+    '[Errno 101] Network is unreachable' al conectar."""
+    def _get_socket(self, host, port, timeout):
+        ip = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)[0][4][0]
+        return super()._get_socket(ip, port, timeout)
 
 def enviar_alerta_sms(mensaje: str):
     """Alerta por WhatsApp (Twilio Sandbox). Solo se entrega como texto libre
@@ -75,7 +83,7 @@ def _enviar_smtp(usuario, compra, xml_factura):
         msg.attach(adj)
     server = None
     try:
-        server = smtplib.SMTP(os.getenv("SMTP_HOST"), int(os.getenv("SMTP_PORT", "587")), timeout=10)
+        server = _SMTPv4(os.getenv("SMTP_HOST"), int(os.getenv("SMTP_PORT", "587")), timeout=10)
         server.starttls()
         server.login(os.getenv("SMTP_USER"), os.getenv("SMTP_PASS"))
         server.send_message(msg)
