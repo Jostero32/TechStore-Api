@@ -6,7 +6,7 @@ services:
     name: techstore-api-1
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --timeout 60
     envVars:
       - key: INSTANCE_NAME
         value: RENDER-1
@@ -44,7 +44,7 @@ services:
     name: techstore-api-2
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --timeout 60
     envVars:
       - key: INSTANCE_NAME
         value: RENDER-2

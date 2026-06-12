@@ -73,7 +73,7 @@ def _enviar_smtp(usuario, compra, xml_factura):
         msg.attach(adj)
     server = None
     try:
-        server = smtplib.SMTP(os.getenv("SMTP_HOST"), int(os.getenv("SMTP_PORT", "587")))
+        server = smtplib.SMTP(os.getenv("SMTP_HOST"), int(os.getenv("SMTP_PORT", "587")), timeout=10)
         server.starttls()
         server.login(os.getenv("SMTP_USER"), os.getenv("SMTP_PASS"))
         server.send_message(msg)
@@ -82,7 +82,10 @@ def _enviar_smtp(usuario, compra, xml_factura):
         print(f"[Email] Error SMTP: {e}")
     finally:
         if server:
-            server.quit()
+            try:
+                server.quit()
+            except Exception:
+                pass
 
 # ── Texto del correo ──────────────────────────────────────────────────────────
 def _cuerpo(usuario, compra) -> str:
