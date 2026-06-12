@@ -1,27 +1,29 @@
 """Requerimiento 8: alertas con Twilio y correos (Brevo HTTP API o SMTP)."""
-import os, base64, smtplib, requests
+import os, base64, json, smtplib, requests
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
 BREVO_URL = "https://api.brevo.com/v3/smtp/email"
 
-def enviar_alerta_sms(mensaje: str):
+def enviar_alerta_sms(content_variables: dict):
+    """Alerta por WhatsApp (Twilio Sandbox) usando un Content Template aprobado."""
     sid   = os.getenv("TWILIO_ACCOUNT_SID")
     token = os.getenv("TWILIO_AUTH_TOKEN")
     if not sid or not token:
-        print("[Twilio] No configurado, se omite SMS")
+        print("[Twilio] No configurado, se omite alerta")
         return
     try:
         from twilio.rest import Client
         Client(sid, token).messages.create(
-            body=mensaje,
-            from_=os.getenv("TWILIO_FROM"),
-            to=os.getenv("TWILIO_ADMIN_PHONE"),
+            content_sid=os.getenv("TWILIO_CONTENT_SID"),
+            content_variables=json.dumps(content_variables),
+            from_=f"whatsapp:{os.getenv('TWILIO_FROM')}",
+            to=f"whatsapp:{os.getenv('TWILIO_ADMIN_PHONE')}",
         )
-        print("[Twilio] Alerta enviada")
+        print("[Twilio] Alerta WhatsApp enviada")
     except Exception as e:
-        print(f"[Twilio] Error enviando SMS: {e}")
+        print(f"[Twilio] Error enviando WhatsApp: {e}")
 
 def enviar_factura_email(usuario, compra, xml_factura: str | None):
     if os.getenv("BREVO_API_KEY"):

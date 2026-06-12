@@ -59,8 +59,10 @@ def crear():
         # 3) Notificaciones (no bloquean la compra si fallan)
         try:
             enviar_factura_email(usuario, compra, soap.get("xml") if soap else None)
-            enviar_alerta_sms(f"TechStore360: nueva compra #{compra.id} por ${total} "
-                              f"({current_app.config['INSTANCE_NAME']})")
+            enviar_alerta_sms({
+                "1": f"#{compra.id}",
+                "2": f"${total} ({current_app.config['INSTANCE_NAME']})",
+            })
         except Exception as e:
             current_app.logger.warning(f"Notificación falló: {e}")
 
